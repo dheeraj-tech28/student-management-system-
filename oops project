@@ -1,0 +1,112 @@
+#include <iostream>
+#include <fstream>
+#include <string>
+using namespace std;
+
+class Student {
+protected:
+    int roll;
+    string name;
+    float marks;
+    static int count;
+public:
+    Student() { roll = 0; name = ""; marks = 0; count++; }
+    Student(int r, string n, float m) { roll = r; name = n; marks = m; count++; }
+    virtual void input() {
+        cout << "Enter Roll, Name, Marks: ";
+        cin >> roll >> name >> marks;
+    }
+    virtual void display() const {
+        cout << roll << " " << name << " " << marks << endl;
+    }
+    static void total() { cout << "Total Students: " << count << endl; }
+    friend void compare(Student s1, Student s2);
+};
+int Student::count = 0;
+
+void compare(Student s1, Student s2) {
+    if (s1.marks > s2.marks)
+        cout << s1.name << " has higher marks\n";
+    else
+        cout << s2.name << " has higher marks\n";
+}
+
+class Result : public Student {
+    string grade;
+public:
+    Result() {}
+    Result(int r, string n, float m, string g) : Student(r, n, m), grade(g) {}
+    void display() const {
+        cout << roll << " " << name << " " << marks << " " << grade << endl;
+    }
+};
+
+class Teacher {
+    string tname;
+public:
+    Teacher(string n) : tname(n) {}
+    inline void info() { cout << "Teacher: " << tname << endl; }
+};
+
+class Admin {
+public:
+    virtual void menu() = 0;
+};
+
+class Dheeraj : public Admin {
+public:
+    void menu() { cout << "1.Add 2.Show 3.Save 4.Exit\n"; }
+};
+
+template <class T>
+T add(T a, T b) { return a + b; }
+
+class FileHandler {
+public:
+    void save(Student* s, int n) {
+        ofstream fout("students.txt");
+        for (int i = 0; i < n; i++)
+            fout << s[i].name << " " << s[i].marks << endl;
+        fout.close();
+    }
+    void read() {
+        ifstream fin("students.txt");
+        string n; float m;
+        while (fin >> n >> m)
+            cout << n << " " << m << endl;
+        fin.close();
+    }
+};
+
+int main() {
+    Dheeraj admin;
+    admin.menu();
+    Teacher t("Bhuvan");
+    t.info();
+
+    Student* ptr = new Student[2];
+    ptr[0] = Student(1, "Ritika", 89.5);
+    ptr[1] = Student(2, "Dheeraj", 91.2);
+    compare(ptr[0], ptr[1]);
+    Result r1(3, "Bhuvan", 90.6, "A");
+    r1.display();
+
+    cout << "Sum of marks: " << add<float>(ptr[0].marks, ptr[1].marks) << endl;
+    Student::total();
+
+    try {
+        int x = 10, y = 0;
+        if (y == 0) throw "Divide by zero error";
+        cout << x / y;
+    }
+    catch (const char* e) {
+        cout << e << endl;
+    }
+
+    FileHandler f;
+    f.save(ptr, 2);
+    f.read();
+
+    delete[] ptr;
+    return 0;
+}
