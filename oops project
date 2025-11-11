@@ -20,11 +20,14 @@ public:
         cout << roll << " " << name << " " << marks << endl;
     }
     static void total() { cout << "Total Students: " << count << endl; }
-    friend void compare(Student s1, Student s2);
+    friend void compare(const Student &s1, const Student &s2);
+
+    string getName() const { return name; }
+    float getMarks() const { return marks; }
 };
 int Student::count = 0;
 
-void compare(Student s1, Student s2) {
+void compare(const Student &s1, const Student &s2) {
     if (s1.marks > s2.marks)
         cout << s1.name << " has higher marks\n";
     else
@@ -36,7 +39,7 @@ class Result : public Student {
 public:
     Result() {}
     Result(int r, string n, float m, string g) : Student(r, n, m), grade(g) {}
-    void display() const {
+    void display() const override {
         cout << roll << " " << name << " " << marks << " " << grade << endl;
     }
 };
@@ -55,7 +58,7 @@ public:
 
 class Dheeraj : public Admin {
 public:
-    void menu() { cout << "1.Add 2.Show 3.Save 4.Exit\n"; }
+    void menu() override { cout << "1.Add 2.Show 3.Save 4.Exit\n"; }
 };
 
 template <class T>
@@ -66,7 +69,7 @@ public:
     void save(Student* s, int n) {
         ofstream fout("students.txt");
         for (int i = 0; i < n; i++)
-            fout << s[i].name << " " << s[i].marks << endl;
+            fout << s[i].getName() << " " << s[i].getMarks() << endl;
         fout.close();
     }
     void read() {
@@ -81,17 +84,18 @@ public:
 int main() {
     Dheeraj admin;
     admin.menu();
-    Teacher t("Bhuvan");
+    Teacher t("Bhuvana");
     t.info();
 
     Student* ptr = new Student[2];
     ptr[0] = Student(1, "Ritika", 89.5);
     ptr[1] = Student(2, "Dheeraj", 91.2);
     compare(ptr[0], ptr[1]);
-    Result r1(3, "Bhuvan", 90.6, "A");
+
+    Result r1(3, "Bhuvana", 90.6, "A");
     r1.display();
 
-    cout << "Sum of marks: " << add<float>(ptr[0].marks, ptr[1].marks) << endl;
+    cout << "Sum of marks: " << add<float>(ptr[0].getMarks(), ptr[1].getMarks()) << endl;
     Student::total();
 
     try {
